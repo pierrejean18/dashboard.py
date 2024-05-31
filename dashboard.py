@@ -100,7 +100,10 @@ with tab2:
     categorie = st.selectbox("Sélectionnez la catégorie", list(sexe[h_ou_f][categorie_poids].keys()))
 
     # Section pour afficher les résultats
-    st.header("Résultats")
-    if temps_rameur and categorie:
-        pourcentage = calcul_pourcentage(temps_rameur, (h_ou_f, categorie_poids, categorie), sexe)
-        st.write(f"Le pourcentage par rapport au record du monde pour la catégorie {categorie} est de : {pourcentage:.2f}%")
+    if st.button("Calculer"):
+        if temps_rameur:
+            pourcentage = calcul_pourcentage(temps_rameur, (categorie, categorie_poids), sexe[h_ou_f])
+            st.write(f"Le pourcentage par rapport au record du monde pour la catégorie {categorie} est de : {pourcentage:.2f}%")
+            st.experimental_rerun()
+        else:
+            st.error("Veuillez entrer un temps valide.")
