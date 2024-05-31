@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 
-
 st.title('Outils pour coach d\'aviron')
 
 # Créer des onglets
@@ -9,7 +8,6 @@ tab1, tab2 = st.tabs(["ratio pelle aviron", "calcul pourcentage"])
 
 # Premier onglet : Entrée de données
 with tab1:
-
     # Créer des champs d'entrée de nombre
     nombre1 = st.number_input('Entrez la longueur de pelle', value=288)
     nombre2 = st.number_input('Entrez le levier intérieur', value=88)
@@ -25,11 +23,8 @@ with tab1:
     else:
         st.error("Erreur : La longueur de pelle ne peut pas être zéro pour calculer le ratio.")
 
-
-#deuxième onglet
+# Deuxième onglet : Calcul de pourcentage
 with tab2:
-
-
     # Définition des records du monde pour chaque catégorie Homme
     records_homme_TC = {
         "1XH TC": "6:30", 
@@ -54,16 +49,16 @@ with tab2:
 
     # Définition des records du monde pour chaque catégorie Homme Poids Léger
     records_homme_PL = {
-        "1XH PL": "6:38", 
-        "2XH PL": "6:04",
-        "4XH PL": "5:37"
+        "1XH PL": "7:22", 
+        "2XH PL": "6:40",
+        "4XH PL": "6:12"
     }
 
     # Définition des records du monde pour chaque catégorie Femme Poids Léger
     records_femme_PL = {
-        "1XF PL": "7:22", 
-        "2XF PL": "6:40",
-        "4XF PL": "6:12"
+        "1XF PL": "6:38", 
+        "2XF PL": "6:04",
+        "4XF PL": "5:37"
     }
 
     # Dictionnaire regroupant les records du monde par sexe et catégorie de poids
@@ -78,11 +73,18 @@ with tab2:
         return minutes * 60 + secondes
 
     # Fonction pour calculer le pourcentage
-    def calcul_pourcentage(temps_rameur, record_monde, sexe):
-        temps_rameur_sec = temps_en_secondes(temps_rameur)
-        record_monde_sec = temps_en_secondes(sexe[record_monde[0]][record_monde[1]][record_monde[2]])
-        pourcentage = (record_monde_sec / temps_rameur_sec) * 100
-        return pourcentage
+    def calcul_pourcentage(temps_rameur, categorie, categorie_poids, sexe_dict):
+        try:
+            temps_rameur_sec = temps_en_secondes(temps_rameur)
+            record_monde_sec = temps_en_secondes(sexe_dict[categorie_poids][categorie])
+            pourcentage = (record_monde_sec / temps_rameur_sec) * 100
+            return pourcentage
+        except KeyError as e:
+            st.error(f"Erreur : Clé non trouvée - {e}")
+            return None
+        except Exception as e:
+            st.error(f"Erreur lors du calcul : {e}")
+            return None
 
     # Titre de l'application
     st.title("Calcul de pourcentage par rapport au record du monde")
@@ -95,15 +97,14 @@ with tab2:
     categorie_poids = st.selectbox("Sélectionner la catégorie de poids", list(sexe[h_ou_f].keys()))
 
     # Section pour saisir le temps du rameur et sélectionner la catégorie
-    st.header("Entrée de données")
     temps_rameur = st.text_input("Entrez le temps du rameur (8:00)")
     categorie = st.selectbox("Sélectionnez la catégorie", list(sexe[h_ou_f][categorie_poids].keys()))
 
     # Section pour afficher les résultats
     if st.button("Calculer"):
         if temps_rameur:
-            pourcentage = calcul_pourcentage(temps_rameur, (categorie, categorie_poids), sexe[h_ou_f])
-            st.write(f"Le pourcentage par rapport au record du monde pour la catégorie {categorie} est de : {pourcentage:.2f}%")
-            st.experimental_rerun()
+            pourcentage = calcul_pourcentage(temps_rameur, categorie, categorie_poids, sexe[h_ou_f])
+            if pourcentage is not None:
+                st.write(f"Le pourcentage par rapport au record du monde pour la catégorie {categorie} est de : {pourcentage:.2f}%")
         else:
             st.error("Veuillez entrer un temps valide.")
