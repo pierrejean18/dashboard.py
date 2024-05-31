@@ -4,8 +4,6 @@ import numpy as np
 
 st.title('Outils pour coach d\'aviron')
 
-st.sidebar.image("tours_logo.svg", width=100)
-
 # Créer des onglets
 tab1, tab2 = st.tabs(["ratio pelle aviron", "calcul pourcentage"])
 
