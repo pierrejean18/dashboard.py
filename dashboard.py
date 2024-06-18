@@ -3,11 +3,14 @@ import numpy as np
 
 st.title('Outils pour coach d\'aviron')
 
+st.sidebar.image("tours_logo.svg", width=100)
+
 # Créer des onglets
 tab1, tab2 = st.tabs(["ratio pelle aviron", "calcul pourcentage"])
 
 # Premier onglet : Entrée de données
 with tab1:
+
     # Créer des champs d'entrée de nombre
     nombre1 = st.number_input('Entrez la longueur de pelle', value=288)
     nombre2 = st.number_input('Entrez le levier intérieur', value=88)
@@ -23,48 +26,105 @@ with tab1:
     else:
         st.error("Erreur : La longueur de pelle ne peut pas être zéro pour calculer le ratio.")
 
-# Deuxième onglet : Calcul de pourcentage
+
+# Deuxième onglet
 with tab2:
-    # Définition des records du monde pour chaque catégorie Homme
-    records_homme_TC = {
-        "1XH TC": "6:30", 
-        "2XH TC": "5:57",
-        "4XH TC": "5:30",
-        "2-H TC": "6:08",
-        "4-H TC": "5:36",
-        "4+H TC": "5:49",
-        "8+H TC": "5:17"
-    }
-
-    # Définition des records du monde pour chaque catégorie Femme
-    records_femme_TC = {
-        "1XF TC": "7:05", 
-        "2XF TC": "6:34",
-        "4XF TC": "6:05",
-        "2-F TC": "6:47",
-        "4-F TC": "6:12",
-        "4+F TC": "6:29",
-        "8+F TC": "5:51"
-    }
-
-    # Définition des records du monde pour chaque catégorie Homme Poids Léger
-    records_homme_PL = {
-        "1XH PL": "7:22", 
-        "2XH PL": "6:40",
-        "4XH PL": "6:12"
-    }
-
-    # Définition des records du monde pour chaque catégorie Femme Poids Léger
-    records_femme_PL = {
-        "1XF PL": "6:38", 
-        "2XF PL": "6:04",
-        "4XF PL": "5:37"
-    }
-
-    # Dictionnaire regroupant les records du monde par sexe et catégorie de poids
-    sexe = {
-        "Homme": {"Toutes Catégories": records_homme_TC, "Poids Léger": records_homme_PL},
-        "Femme": {"Toutes Catégories": records_femme_TC, "Poids Léger": records_femme_PL}
+    # Définition des records par catégorie et sexe
+    records = {
+        "J14": {
+            "Homme": {
+                "4x+": "6:30",
+                "8x+": "5:57",
+            },
+            "Femme": {
+                "4x+": "6:30",
+                "8x+": "5:57",
+            },
+            "Mixte": {
+                "2x": "6:30",
+                "4x+": "5:57",
+            },
+        },
+        "J16": {
+            "Homme": {
+                "1x": "6:30",
+                "2x": "5:57",
+                "4x": "5:30",
+                "2-": "6:08",
+                "4+": "5:49",
+                "8+": "5:17"
+            },
+            "Femme": {
+                "1x": "6:30",
+                "2x": "5:57",
+                "4x": "5:30",
+                "2-": "6:08",
+                "4+": "5:49",
+                "8+": "5:17"
+            },
+            "Mixte": {
+                "4x": "5:30",
+            },
+        },
+        "J18": {
+            "Homme": {
+                "1x": "6:30",
+                "2x": "5:57",
+                "4x": "5:30",
+                "2-": "6:08",
+                "4-": "5:49",
+                "8+": "5:17"
+            },
+            "Femme": {
+                "1x": "6:30",
+                "2x": "5:57",
+                "4x": "5:30",
+                "2-": "6:08",
+                "4-": "5:49",
+                "8+": "5:17"
+            },"Mixte": {
+                "4x": "5:30",
+            },
+        },
+        "Senior": {
+            "Mixte": {
+                "2x": "6:30",
+                "4x": "5:57",
+                "8+": "5:57"
+            },
+            "Homme": {
+                "Toutes Catégories": {
+                    "1x": "6:30",
+                    "2x": "5:57",
+                    "4x": "5:30",
+                    "2-": "6:08",
+                    "4-": "5:36",
+                    "4+": "5:49",
+                    "8+": "5:17"
+                },
+                "Poids Léger": {
+                    "1x": "6:38",
+                    "2x": "6:04",
+                    "4x": "5:37"
+                }
+            },
+            "Femme": {
+                "Toutes Catégories": {
+                    "1x": "7:05",
+                    "2x": "6:34",
+                    "4x": "6:05",
+                    "2-": "6:47",
+                    "4-": "6:12",
+                    "4+": "6:29",
+                    "8+": "5:51"
+                },
+                "Poids Léger": {
+                    "1x": "7:22",
+                    "2x": "6:40",
+                    "4x": "6:12"
+                }
+            }
+        }
     }
 
     # Fonction pour convertir un temps en secondes
@@ -72,39 +132,41 @@ with tab2:
         minutes, secondes = map(int, temps.split(':'))
         return minutes * 60 + secondes
 
-    # Fonction pour calculer le pourcentage
-    def calcul_pourcentage(temps_rameur, categorie, categorie_poids, sexe_dict):
-        try:
-            temps_rameur_sec = temps_en_secondes(temps_rameur)
-            record_monde_sec = temps_en_secondes(sexe_dict[categorie_poids][categorie])
-            pourcentage = (record_monde_sec / temps_rameur_sec) * 100
-            return pourcentage
-        except KeyError as e:
-            st.error(f"Erreur : Clé non trouvée - {e}")
-            return None
-        except Exception as e:
-            st.error(f"Erreur lors du calcul : {e}")
-            return None
+    # Fonction pour calculer le pourcentage par rapport au record
+    def calcul_pourcentage(temps_rameur, temps_record):
+        temps_rameur_sec = temps_en_secondes(temps_rameur)
+        temps_record_sec = temps_en_secondes(temps_record)
+        pourcentage = (temps_record_sec / temps_rameur_sec) * 100
+        return pourcentage
 
     # Titre de l'application
     st.title("Calcul de pourcentage par rapport au record du monde")
 
-    # Section pour choisir H ou F 
-    st.header("Entrée de données")
-    h_ou_f = st.selectbox("Sélectionner le sexe", list(sexe.keys()))
+    # Sélection de la catégorie d'âge
+    categorie_age = st.selectbox("Choisissez une catégorie d'âge", list(records.keys()))
 
-    # Section pour choisir la catégorie de poids
-    categorie_poids = st.selectbox("Sélectionner la catégorie de poids", list(sexe[h_ou_f].keys()))
+    # Sélection du sexe
+    sexe = st.selectbox("Choisissez le sexe", list(records[categorie_age].keys()))
 
-    # Section pour saisir le temps du rameur et sélectionner la catégorie
-    temps_rameur = st.text_input("Entrez le temps du rameur (8:00)")
-    categorie = st.selectbox("Sélectionnez la catégorie", list(sexe[h_ou_f][categorie_poids].keys()))
+    # Si Senior est sélectionné, permettre le choix du type de poids
+    if categorie_age == "Senior" and sexe != "Mixte":
+        categorie_poids = st.selectbox("Choisissez la catégorie de poids", list(records[categorie_age][sexe].keys()))
+        categorie = st.selectbox("Choisissez la catégorie", list(records[categorie_age][sexe][categorie_poids].keys()))
+        temps_record = records[categorie_age][sexe][categorie_poids][categorie]
+    else:
+        categorie = st.selectbox("Choisissez la catégorie", list(records[categorie_age][sexe].keys()))
+        temps_record = records[categorie_age][sexe][categorie]
 
-    # Section pour afficher les résultats
+    # Entrée du temps du rameur
+    temps_rameur = st.text_input("Entrez le temps du rameur (ex: 8:00)")
+
+    # Calcul et affichage du pourcentage
     if st.button("Calculer"):
         if temps_rameur:
-            pourcentage = calcul_pourcentage(temps_rameur, categorie, categorie_poids, sexe[h_ou_f])
-            if pourcentage is not None:
+            try:
+                pourcentage = calcul_pourcentage(temps_rameur, temps_record)
                 st.write(f"Le pourcentage par rapport au record du monde pour la catégorie {categorie} est de : {pourcentage:.2f}%")
+            except ValueError:
+                st.error("Veuillez entrer un temps valide au format MM:SS.")
         else:
-            st.error("Veuillez entrer un temps valide.")
+            st.error("Veuillez entrer un temps.")
