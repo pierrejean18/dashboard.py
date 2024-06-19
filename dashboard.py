@@ -3,10 +3,7 @@ import numpy as np
 
 st.title('Outils pour coach d\'aviron')
 
-st.sidebar.image("tours_logo.svg", width=100)
-
-# Créer des onglets
-tab1, tab2 = st.tabs(["ratio pelle aviron", "calcul pourcentage"])
+tab1, tab2, tab3 = st.tabs(["ratio pelle aviron", "calcul pourcentage","convertisseur watt/500"])
 
 # Premier onglet : Entrée de données
 with tab1:
@@ -26,8 +23,6 @@ with tab1:
     else:
         st.error("Erreur : La longueur de pelle ne peut pas être zéro pour calculer le ratio.")
 
-
-# Deuxième onglet
 with tab2:
     # Définition des records par catégorie et sexe
     records = {
@@ -158,6 +153,7 @@ with tab2:
         temps_record = records[categorie_age][sexe][categorie]
 
     # Entrée du temps du rameur
+    st.title('veuillez entrer le temps de la pige')
     temps_rameur = st.text_input("Entrez le temps du rameur (ex: 8:00)")
 
     # Calcul et affichage du pourcentage
@@ -165,8 +161,16 @@ with tab2:
         if temps_rameur:
             try:
                 pourcentage = calcul_pourcentage(temps_rameur, temps_record)
-                st.write(f"Le pourcentage par rapport au record du monde pour la catégorie {categorie} est de : {pourcentage:.2f}%")
+                if categorie_age == "Senior" and sexe != "Mixte":
+                    st.write(f"Le pourcentage par rapport au record du monde pour la catégorie {categorie_age} {categorie_poids} {categorie} est de : {pourcentage:.2f}%")
+                else:
+                    st.write(f"Le pourcentage par rapport au record du monde pour la catégorie {categorie_age} {categorie} est de : {pourcentage:.2f}%")
             except ValueError:
                 st.error("Veuillez entrer un temps valide au format MM:SS.")
         else:
             st.error("Veuillez entrer un temps.")
+
+with tab3:
+    watt = st.number_input('Entrez le nombre de watt', value=500)
+
+
