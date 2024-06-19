@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import math
 
 st.title('Outils pour coach d\'aviron')
 
@@ -171,6 +172,39 @@ with tab2:
             st.error("Veuillez entrer un temps.")
 
 with tab3:
-    watt = st.number_input('Entrez le nombre de watt', value=500)
+        # Sélectionner le mode de calcul
+    mode = st.selectbox("Choisissez le mode de calcul", ["Calculer le temps pour 500 mètres à partir des watts", "Calculer les watts à partir du temps pour 500 mètres"])
 
-
+    if mode == "Calculer le temps pour 500 mètres à partir des watts":
+        # Entrée utilisateur pour les watts
+        watts = st.number_input('Entrez la puissance (watts)', value=203, min_value=1, step=1)
+        
+        # Calcul du temps pour parcourir 500 mètres
+        pace = (2.80 / watts) ** (1/3)
+        time_seconds = 500 * pace
+        
+        # Conversion en format minutes:secondes.dixièmes
+        minutes = int(time_seconds // 60)
+        seconds = int(time_seconds % 60)
+        tenths = int((time_seconds - int(time_seconds)) * 10)
+        
+        # Affichage du résultat
+        st.write(f"Avec une puissance de {watts} watts, le temps pour parcourir 500 mètres est de {minutes} minutes, {seconds} secondes et {tenths} dixièmes.")
+        
+    else:
+        # Entrée utilisateur pour le temps en minutes, secondes et dixièmes
+        minutes = st.number_input('Entrez les minutes', value=2, min_value=0, format="%d")
+        seconds = st.number_input('Entrez les secondes', value=5, min_value=0, max_value=59, format="%d")
+        tenths = st.number_input('Entrez les dixièmes de seconde', value=0, min_value=0, max_value=9, format="%d")
+        
+        # Calcul du temps total en secondes avec les dixièmes
+        time_seconds = minutes * 60 + seconds + tenths / 10
+        
+        # Calcul du rythme (pace) en secondes/mètre
+        pace = time_seconds / 500
+        
+        # Calcul des watts
+        watts = math.ceil(2.80 / (pace ** 3))  # Arrondi vers le haut pour obtenir un entier
+        
+        # Affichage du résultat
+        st.write(f"Avec un temps de {minutes} minutes, {seconds} secondes et {tenths} dixièmes pour parcourir 500 mètres, la puissance calculée est de {watts} watts.")
